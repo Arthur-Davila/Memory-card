@@ -9,8 +9,14 @@ function App() {
   const [cards,setCards] = useState([])
   const [flipped,setFlipped] = useState([])
   const [matched,setMatched] = useState([])
+  const [score,setScore] = useState(0)
+  const [moves,setMoves] = useState(0)
 
   const initializeGame = () =>{
+    setMoves(0);
+    setScore(0);
+    setMatched([])
+    setFlipped([])
     const finalCard = cardValues.map((value,index)=>(
       {
         id: index,
@@ -47,8 +53,23 @@ function App() {
         const firstCard = cards[flipped[0]]
 
         if(firstCard.value === card.value){
-          alert("match")
-        }else{
+          setScore((prev)=> prev+1)
+        setTimeout(() => {
+          
+       
+          setMatched((prev)=>[...prev,firstCard.id,card.id])
+
+            const newMatchedCards =(prev)=>prev.map((c)=>{
+      if(c.id === card.id || c.id === firstCard.id){
+        return {...c, isMatched : true}
+      }
+      else{
+        return c;
+      }
+    });
+    setCards(newMatchedCards)
+    setFlipped([])
+        },300); }else{
            setTimeout(()=>{
            const flipBackCards = newCards.map((c)=>{
            if (newFlippedCards.includes(c.id)|| c.id === card.id){
@@ -63,12 +84,13 @@ function App() {
            },500)
           
         }
+        setMoves((prev)=> prev+1)
     }
     
 
   }
   return (
-  <div className="app"><GameHeader score= {3} moves={10}/>
+  <div className="app"><GameHeader score= {score} moves={moves} onReset={initializeGame}/>
   <div className="cards-grid">
     {cards.map((card)=>(
       <Card card={card} onClick={handleCardClick}/>
